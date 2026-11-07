@@ -9,13 +9,14 @@
   <title>Signally Day</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α2</span></div>
     </header>
 
     <main class="layout">
@@ -39,15 +40,13 @@
 
       <section class="column center" aria-label="Signally radio">
         <article class="card player-card">
-          <div class="section-top"><p class="eyebrow">SIGNALLY RADIO</p><span class="status">Player coming in Phase 2</span></div>
-          <div class="artwork" role="img" aria-label="Signally Day artwork placeholder"><div class="disc"><span class="disc-middle">♫</span></div></div>
-          <div class="player-info"><h1>Ready to listen</h1><p>Choose your soundtrack for the day.</p></div>
-          <div class="transport" aria-label="Radio controls preview"><button type="button" disabled title="Available in Phase 2">◀◀</button><button type="button" class="play" disabled title="Available in Phase 2" aria-label="Play (coming soon)">▶</button><button type="button" disabled title="Available in Phase 2">▶▶</button></div>
-          <div class="favorites"><div class="favorites-label"><h2>Favorite stations</h2><small>Five shortcuts · setup in Phase 2</small></div>
-            <div class="favorite-buttons">
-              <button disabled>Favorite 1</button><button disabled>Favorite 2</button><button disabled>Favorite 3</button><button disabled>Favorite 4</button><button disabled>Favorite 5</button>
-            </div>
-          </div>
+          <div class="section-top"><p class="eyebrow">SIGNALLY RADIO</p><span id="playerStatus" class="status">Choose a station below</span></div>
+          <div class="artwork" id="artwork" role="img" aria-label="Radio station artwork"><img id="stationArt" alt="" hidden><div class="disc" id="disc"><span class="disc-middle">♫</span></div></div>
+          <div class="player-info"><h1 id="stationName">Ready to listen</h1><p id="nowPlaying">Choose your soundtrack for the day.</p></div>
+          <div class="transport" aria-label="Radio controls"><button type="button" id="previousStation" title="Previous favorite" aria-label="Previous favorite">◀◀</button><button type="button" class="play" id="playPause" title="Play or pause" aria-label="Play" disabled>▶</button><button type="button" id="nextStation" title="Next favorite" aria-label="Next favorite">▶▶</button></div>
+          <div class="volume-row"><label for="volume">Volume</label><input id="volume" type="range" min="0" max="100" value="70" aria-label="Radio volume"><button id="mute" type="button" aria-label="Mute">🔊</button></div>
+          <audio id="radioAudio" preload="none"></audio>
+          <div class="favorites"><div class="favorites-label"><h2>Favorite stations</h2><small>Tap to listen · Edit to configure</small></div><div class="favorite-buttons" id="favoriteButtons"></div><button type="button" class="edit-favorites" id="editFavorites">⚙ Edit favorites</button></div>
         </article>
         <article class="card news-card" aria-label="NPR headlines area"><div class="news-label">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></div><div class="news-text" id="newsText" aria-live="off">Rotating headlines will appear here when the news feed is connected.</div><span class="news-timing">5s rotation planned</span></article>
       </section>
@@ -61,7 +60,14 @@
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 1 preview · Information panels are placeholders</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 2 radio player · Other panels are placeholders</span></footer>
   </div>
+  <dialog id="stationDialog" class="station-dialog" aria-labelledby="stationDialogTitle">
+    <form method="dialog" class="dialog-top"><h2 id="stationDialogTitle">Choose a favorite station</h2><button type="submit" aria-label="Close">✕</button></form>
+    <p class="dialog-help">Choose a favorite slot, search for a station, then tap a result to save it.</p>
+    <label for="favoriteSlot">Favorite slot</label><select id="favoriteSlot"><option value="0">Favorite 1</option><option value="1">Favorite 2</option><option value="2">Favorite 3</option><option value="3">Favorite 4</option><option value="4">Favorite 5</option></select>
+    <div class="search-row"><input id="stationQuery" type="search" placeholder="e.g., Ella Radio, jazz, NPR" maxlength="80"><button type="button" id="searchStations">Search</button></div>
+    <p id="searchMessage" role="status" class="dialog-help">Search by station name.</p><div id="stationResults" class="station-results"></div><button type="button" id="clearFavorite" class="clear-favorite">Clear selected favorite</button>
+  </dialog>
 </body>
 </html>
