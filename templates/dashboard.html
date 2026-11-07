@@ -9,6 +9,7 @@
   <title>Signally Day</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/weather.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
 </head>
 <body>
@@ -16,7 +17,7 @@
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α2</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α3.1</span></div>
     </header>
 
     <main class="layout">
@@ -27,9 +28,12 @@
           <p class="date" id="today">Loading the date…</p>
         </article>
         <article class="card weather-card">
-          <div class="card-heading"><span class="weather-icon" aria-hidden="true">☀</span><h2>Weather</h2></div>
-          <p class="placeholder-main">Chicago, IL</p><p class="muted">Weather API connection comes in Phase 3.</p>
-          <span class="status">Not connected yet</span>
+          <div class="card-heading weather-heading"><span class="weather-icon" aria-hidden="true">☀</span><h2>Weather</h2><button type="button" class="weather-edit" id="editWeather" aria-label="Change weather city">✎ Edit</button></div>
+          <p class="weather-place" id="weatherPlace">Chicago, IL</p>
+          <div class="weather-primary"><span id="weatherSymbol" aria-hidden="true">☁</span><strong id="weatherTemp">--°</strong></div>
+          <p id="weatherDescription" class="weather-description">Connecting to OpenWeatherMap…</p>
+          <p id="weatherDetails" class="weather-details">Feels like --°</p>
+          <span class="status" id="weatherStatus" role="status">Loading weather</span>
         </article>
         <article class="card transit-card">
           <div class="card-heading"><span class="icon" aria-hidden="true">🚌</span><h2>CTA arrivals</h2></div>
@@ -60,8 +64,19 @@
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 2 radio player · Other panels are placeholders</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 weather · selectable city; CTA, news, calendar pending</span></footer>
   </div>
+  <dialog id="weatherDialog" class="station-dialog weather-dialog" aria-labelledby="weatherDialogTitle">
+    <form method="dialog" class="dialog-top"><h2 id="weatherDialogTitle">Choose weather city</h2><button type="submit" aria-label="Close city search">✕</button></form>
+    <p class="dialog-help">Search for a city, then select the correct result. Your choice is saved on this device.</p>
+    <form id="weatherSearchForm" class="search-row">
+      <input id="weatherCityQuery" type="search" placeholder="e.g., Lexington, KY, US" aria-label="City to search" minlength="2" maxlength="80" required>
+      <button type="submit">Search</button>
+    </form>
+    <p class="dialog-help" id="weatherSearchMessage" role="status">Try a city name and state or country.</p>
+    <div id="weatherCityResults" class="station-results"></div>
+    <button type="button" class="clear-favorite" id="weatherReset">Use Chicago, IL</button>
+  </dialog>
   <dialog id="stationDialog" class="station-dialog" aria-labelledby="stationDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="stationDialogTitle">Choose a favorite station</h2><button type="submit" aria-label="Close">✕</button></form>
     <p class="dialog-help">Choose a favorite slot, search for a station, then tap a result to save it.</p>

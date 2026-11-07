@@ -48,3 +48,6 @@ curl.exe http://127.0.0.1:5055/health
 ## Deferred features
 
 Weather API, CTA arrivals, calendar, NPR feed/rotation, and YouTube/live TV are not implemented in this release.
+
+
+See README-CITY.md for city switching (v0.1.0-alpha.3.1).

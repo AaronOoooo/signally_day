@@ -1,10 +1,17 @@
 """Signally Day: private LAN dashboard and independent radio player."""
 import os
 import re
+import time
+from threading import Lock
+from collections import OrderedDict
+
+from dotenv import load_dotenv
 from urllib.parse import urlparse
 
 import requests
 from flask import Flask, jsonify, render_template, request
+
+load_dotenv()
 
 app = Flask(__name__)
 app.json.sort_keys = False
@@ -17,6 +24,11 @@ RADIO_BROWSER_MIRRORS = [
 UUID_PATTERN = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F-]{20,40}$')
 SESSION = requests.Session()
 SESSION.headers.update({'User-Agent': 'SignallyDay/0.1 (+personal dashboard)'})
+
+WEATHER_CACHE = OrderedDict()
+WEATHER_LOCK = Lock()
+WEATHER_TTL_SECONDS = 600
+
 
 
 def valid_station_uuid(value):
@@ -40,7 +52,7 @@ def dashboard():
 
 @app.get('/health')
 def health():
-    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.2')
+    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.3.1')
 
 
 @app.get('/api/stations/search')
@@ -104,6 +116,90 @@ def station_metadata(uuid):
         return response
     except (requests.RequestException, ValueError):
         return jsonify(error='Could not retrieve station information from Signally.'), 502
+
+
+@app.get('/api/weather/cities')
+def weather_cities():
+    """Search OpenWeatherMap geocoding without exposing the API key."""
+    key = os.getenv('OPENWEATHER_API_KEY', '').strip()
+    if not key:
+        return jsonify(error='Weather API key is not configured.'), 503
+    query = request.args.get('q', '').strip()
+    if not 2 <= len(query) <= 80 or any(ord(ch) < 32 for ch in query):
+        return jsonify(error='Enter a city name (2–80 characters).'), 400
+    try:
+        upstream = SESSION.get('https://api.openweathermap.org/geo/1.0/direct',
+                               params={'q': query, 'limit': 5, 'appid': key}, timeout=9)
+        upstream.raise_for_status()
+        raw = upstream.json()
+        if not isinstance(raw, list):
+            raise ValueError('Unexpected city search response')
+        matches = []
+        for item in raw[:5]:
+            try:
+                lat, lon = float(item['lat']), float(item['lon'])
+                if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                    continue
+                name = str(item.get('name') or '').strip()[:80]
+                if not name:
+                    continue
+                matches.append({'name': name,
+                                'state': str(item.get('state') or '')[:70],
+                                'country': str(item.get('country') or '')[:3],
+                                'lat': round(lat, 5), 'lon': round(lon, 5)})
+            except (KeyError, TypeError, ValueError):
+                continue
+        return jsonify(cities=matches)
+    except (requests.RequestException, ValueError):
+        return jsonify(error='City search is temporarily unavailable.'), 502
+
+
+@app.get('/api/weather')
+def current_weather():
+    """Serve cached weather for validated coordinates; API key stays on the server."""
+    key = os.getenv('OPENWEATHER_API_KEY', '').strip()
+    if not key:
+        return jsonify(error='Weather API key is not configured.'), 503
+    try:
+        lat = float(request.args.get('lat', '41.8781'))
+        lon = float(request.args.get('lon', '-87.6298'))
+    except (TypeError, ValueError):
+        return jsonify(error='Invalid latitude or longitude.'), 400
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return jsonify(error='Location is outside the valid coordinate range.'), 400
+    # Round keys to reduce pointless duplication from small coordinate changes.
+    cache_key = (round(lat, 4), round(lon, 4))
+    now = time.monotonic()
+    with WEATHER_LOCK:
+        cached = WEATHER_CACHE.get(cache_key)
+        if cached and now - cached['time'] < WEATHER_TTL_SECONDS:
+            return jsonify(cached['data'])
+        try:
+            reply = SESSION.get('https://api.openweathermap.org/data/2.5/weather',
+                params={'lat': lat, 'lon': lon, 'units': 'imperial', 'appid': key}, timeout=9)
+            if reply.status_code == 401:
+                return jsonify(error='OpenWeatherMap rejected the API key.'), 502
+            reply.raise_for_status()
+            raw = reply.json()
+            main, condition = raw['main'], raw['weather'][0]
+            data = {'city': str(raw.get('name') or 'Selected city')[:90],
+                    'temperature': round(float(main['temp'])),
+                    'feels_like': round(float(main['feels_like'])),
+                    'description': str(condition.get('description', 'Current conditions'))[:75].capitalize(),
+                    'condition_id': int(condition['id']),
+                    'humidity': int(main.get('humidity', 0)),
+                    'observed_at': int(raw.get('dt', 0))}
+            WEATHER_CACHE[cache_key] = {'time': now, 'data': data}
+            WEATHER_CACHE.move_to_end(cache_key)
+            while len(WEATHER_CACHE) > 32:
+                WEATHER_CACHE.popitem(last=False)
+            response = jsonify(data)
+            response.headers['Cache-Control'] = 'private, max-age=60'
+            return response
+        except (requests.RequestException, ValueError, TypeError, KeyError, IndexError):
+            if cached:
+                return jsonify(dict(cached['data'], stale=True))
+            return jsonify(error='Weather is temporarily unavailable.'), 502
 
 
 if __name__ == '__main__':
