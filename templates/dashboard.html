@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
 </head>
 <body>
@@ -17,7 +18,7 @@
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α3.1</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α4</span></div>
     </header>
 
     <main class="layout">
@@ -36,9 +37,11 @@
           <span class="status" id="weatherStatus" role="status">Loading weather</span>
         </article>
         <article class="card transit-card">
-          <div class="card-heading"><span class="icon" aria-hidden="true">🚌</span><h2>CTA arrivals</h2></div>
-          <p class="placeholder-main">Your bus stops</p><p class="muted">We'll add your route, stop IDs and arrival estimates.</p>
-          <span class="status">Not connected yet</span>
+          <div class="card-heading transit-heading"><span class="icon" aria-hidden="true">🚌</span><h2>CTA arrivals</h2><button type="button" class="transit-edit" id="editTransit">✎ Edit</button></div>
+          <p class="transit-place" id="transitPlace">Indiana &amp; 31st · Northbound</p>
+          <p class="transit-stop" id="transitStop">Stop #1563</p>
+          <div id="transitArrivals" class="transit-arrivals" aria-live="off"><p class="muted">Connecting to CTA Bus Tracker…</p></div>
+          <span class="status" id="transitStatus" role="status">Loading arrivals</span>
         </article>
       </section>
 
@@ -64,7 +67,7 @@
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 weather · selectable city; CTA, news, calendar pending</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 weather + CTA · news, calendar pending</span></footer>
   </div>
   <dialog id="weatherDialog" class="station-dialog weather-dialog" aria-labelledby="weatherDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="weatherDialogTitle">Choose weather city</h2><button type="submit" aria-label="Close city search">✕</button></form>
@@ -76,6 +79,16 @@
     <p class="dialog-help" id="weatherSearchMessage" role="status">Try a city name and state or country.</p>
     <div id="weatherCityResults" class="station-results"></div>
     <button type="button" class="clear-favorite" id="weatherReset">Use Chicago, IL</button>
+  </dialog>
+  <dialog id="transitDialog" class="station-dialog" aria-labelledby="transitDialogTitle">
+    <form method="dialog" class="dialog-top"><h2 id="transitDialogTitle">Choose CTA stop</h2><button type="submit" aria-label="Close">✕</button></form>
+    <p class="dialog-help">Enter a CTA Bus Tracker stop number. Predictions for all routes serving the stop will appear. Your selection is saved on this device.</p>
+    <form id="transitStopForm" class="search-row">
+      <input id="transitStopInput" type="text" inputmode="numeric" pattern="[0-9]{1,6}" maxlength="6" required placeholder="1563" aria-label="CTA stop number">
+      <button type="submit">Save</button>
+    </form>
+    <p class="dialog-help" id="transitEditMessage" role="status">Initial stop: #1563, Indiana &amp; 31st, northbound.</p>
+    <button type="button" class="clear-favorite" id="transitReset">Use Stop #1563</button>
   </dialog>
   <dialog id="stationDialog" class="station-dialog" aria-labelledby="stationDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="stationDialogTitle">Choose a favorite station</h2><button type="submit" aria-label="Close">✕</button></form>

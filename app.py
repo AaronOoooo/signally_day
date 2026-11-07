@@ -4,6 +4,8 @@ import re
 import time
 from threading import Lock
 from collections import OrderedDict
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 from urllib.parse import urlparse
@@ -28,6 +30,9 @@ SESSION.headers.update({'User-Agent': 'SignallyDay/0.1 (+personal dashboard)'})
 WEATHER_CACHE = OrderedDict()
 WEATHER_LOCK = Lock()
 WEATHER_TTL_SECONDS = 600
+CTA_CACHE = {}
+CTA_LOCK = Lock()
+CTA_TTL_SECONDS = 25
 
 
 
@@ -52,7 +57,7 @@ def dashboard():
 
 @app.get('/health')
 def health():
-    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.3.1')
+    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.4.1')
 
 
 @app.get('/api/stations/search')
@@ -201,6 +206,91 @@ def current_weather():
                 return jsonify(dict(cached['data'], stale=True))
             return jsonify(error='Weather is temporarily unavailable.'), 502
 
+
+
+@app.get('/api/cta/arrivals')
+def cta_arrivals():
+    """Server-side proxy for official CTA Bus Tracker predictions; never expose API key."""
+    key = os.getenv('CTA_API_KEY', '').strip()
+    if not key:
+        return jsonify(error='CTA API key is not configured.'), 503
+    stop = request.args.get('stop', '1563').strip()
+    if not stop.isascii() or not stop.isdecimal() or not (1 <= len(stop) <= 6):
+        return jsonify(error='Enter a valid numeric CTA stop ID.'), 400
+    now = time.monotonic()
+    with CTA_LOCK:
+        cached = CTA_CACHE.get(stop)
+        if cached and now - cached['time'] < CTA_TTL_SECONDS:
+            return jsonify(cached['data'])
+    try:
+        upstream = SESSION.get('https://www.ctabustracker.com/bustime/api/v3/getpredictions',
+            params={'key': key, 'stpid': stop, 'format': 'json', 'top': 6}, timeout=10)
+        upstream.raise_for_status()
+        payload = upstream.json()
+        envelope = payload.get('bustime-response') if isinstance(payload, dict) else None
+        if not isinstance(envelope, dict):
+            raise ValueError('Unexpected CTA response')
+        errors = envelope.get('error') or []
+        if isinstance(errors, dict):
+            errors = [errors]
+        if errors:
+            first = errors[0]
+            code = str(first.get('rt', '')) if isinstance(first, dict) else ''
+            message = str(first.get('msg', '')) if isinstance(first, dict) else ''
+            # Never pass upstream key or request URLs through to the browser.
+            if 'No service scheduled' in message or 'No arrival times' in message or 'No predictions' in message:
+                arrivals = []
+            elif 'Invalid API key' in message or 'Invalid key' in message:
+                return jsonify(error='CTA rejected the API key.'), 502
+            elif message:
+                return jsonify(error='CTA Bus Tracker: ' + message[:100]), 502
+            else:
+                arrivals = []
+        else:
+            arrivals = envelope.get('prd') or []
+        if isinstance(arrivals, dict):
+            arrivals = [arrivals]
+        if not isinstance(arrivals, list):
+            raise ValueError('Invalid predictions list')
+        result = []
+        stop_name = 'Indiana & 31st Street (Northbound)' if stop == '1563' else 'CTA Stop ' + stop
+        for item in arrivals[:6]:
+            if not isinstance(item, dict):
+                continue
+            destination = str(item.get('des') or 'Destination unavailable')[:70]
+            route = str(item.get('rt') or '?')[:12]
+            countdown = str(item.get('prdctdn') or '').strip().upper()
+            if not (countdown.isdecimal() or countdown == 'DUE'):
+                continue
+            stop_name = str(item.get('stpnm') or stop_name)[:100]
+            # CTA timestamps are Chicago-local (YYYYMMDD HH:MM), not UTC.
+            # Return an offset-aware ISO timestamp so the iPad can render
+            # the arrival clock time correctly in any time zone.
+            predicted_at = None
+            raw_time = str(item.get('prdtm') or '').strip()
+            if raw_time:
+                try:
+                    local_dt = datetime.strptime(raw_time, '%Y%m%d %H:%M')
+                    predicted_at = local_dt.replace(tzinfo=ZoneInfo('America/Chicago')).isoformat()
+                except ValueError:
+                    pass
+            result.append({'route': route, 'destination': destination,
+                           'minutes': 0 if countdown == 'DUE' else int(countdown),
+                           'due': countdown == 'DUE',
+                           'arrival_time': predicted_at,
+                           'delayed': str(item.get('dly') or '').lower() == 'true'})
+        result.sort(key=lambda x: x['minutes'])
+        data = {'stop_id': stop, 'stop_name': stop_name, 'arrivals': result[:3]}
+        with CTA_LOCK:
+            CTA_CACHE[stop] = {'time': time.monotonic(), 'data': data}
+            if len(CTA_CACHE) > 32:
+                oldest = min(CTA_CACHE, key=lambda s: CTA_CACHE[s]['time'])
+                del CTA_CACHE[oldest]
+        return jsonify(data)
+    except (requests.RequestException, ValueError, TypeError, KeyError):
+        if cached:
+            return jsonify(dict(cached['data'], stale=True))
+        return jsonify(error='CTA arrivals are temporarily unavailable.'), 502
 
 if __name__ == '__main__':
     # LAN development only. Do not forward port 5055 to the internet.
