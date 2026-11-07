@@ -51,3 +51,6 @@ Weather API, CTA arrivals, calendar, NPR feed/rotation, and YouTube/live TV are 
 
 
 See README-CITY.md for city switching (v0.1.0-alpha.3.1).
+
+
+**Phase 3B.1:** CTA predicted clock-time display and color-coded arrival countdown (green ≥10 min, orange 6–9 min, red ≤5 min). See README-CTA.md.
