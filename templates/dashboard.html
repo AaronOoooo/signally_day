@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1423">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Signally Day</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
+  <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <header class="header">
+      <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
+      <p class="greeting" id="greeting">Welcome to your day.</p>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0</span></div>
+    </header>
+
+    <main class="layout">
+      <section class="column left" aria-label="At a glance">
+        <article class="card clock-card">
+          <p class="eyebrow">CHICAGO TIME</p>
+          <div class="time-line"><time id="clock">--:--</time><span class="ampm" id="ampm">--</span></div>
+          <p class="date" id="today">Loading the date…</p>
+        </article>
+        <article class="card weather-card">
+          <div class="card-heading"><span class="weather-icon" aria-hidden="true">☀</span><h2>Weather</h2></div>
+          <p class="placeholder-main">Chicago, IL</p><p class="muted">Weather API connection comes in Phase 3.</p>
+          <span class="status">Not connected yet</span>
+        </article>
+        <article class="card transit-card">
+          <div class="card-heading"><span class="icon" aria-hidden="true">🚌</span><h2>CTA arrivals</h2></div>
+          <p class="placeholder-main">Your bus stops</p><p class="muted">We'll add your route, stop IDs and arrival estimates.</p>
+          <span class="status">Not connected yet</span>
+        </article>
+      </section>
+
+      <section class="column center" aria-label="Signally radio">
+        <article class="card player-card">
+          <div class="section-top"><p class="eyebrow">SIGNALLY RADIO</p><span class="status">Player coming in Phase 2</span></div>
+          <div class="artwork" role="img" aria-label="Signally Day artwork placeholder"><div class="disc"><span class="disc-middle">♫</span></div></div>
+          <div class="player-info"><h1>Ready to listen</h1><p>Choose your soundtrack for the day.</p></div>
+          <div class="transport" aria-label="Radio controls preview"><button type="button" disabled title="Available in Phase 2">◀◀</button><button type="button" class="play" disabled title="Available in Phase 2" aria-label="Play (coming soon)">▶</button><button type="button" disabled title="Available in Phase 2">▶▶</button></div>
+          <div class="favorites"><div class="favorites-label"><h2>Favorite stations</h2><small>Five shortcuts · setup in Phase 2</small></div>
+            <div class="favorite-buttons">
+              <button disabled>Favorite 1</button><button disabled>Favorite 2</button><button disabled>Favorite 3</button><button disabled>Favorite 4</button><button disabled>Favorite 5</button>
+            </div>
+          </div>
+        </article>
+        <article class="card news-card" aria-label="NPR headlines area"><div class="news-label">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></div><div class="news-text" id="newsText" aria-live="off">Rotating headlines will appear here when the news feed is connected.</div><span class="news-timing">5s rotation planned</span></article>
+      </section>
+
+      <section class="column right" aria-label="Calendar">
+        <article class="card calendar-card">
+          <div class="calendar-title"><h2>Calendar</h2><span class="calendar-icon" aria-hidden="true">▦</span></div>
+          <p class="calendar-date" id="calendarDate">Today</p>
+          <div class="calendar-empty"><div class="calendar-glyph" aria-hidden="true">▤</div><p>Your upcoming events will appear here.</p><small>Private calendar connection comes in Phase 3.</small></div>
+          <div class="calendar-bottom"><span class="status">Not connected yet</span></div>
+        </article>
+      </section>
+    </main>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 1 preview · Information panels are placeholders</span></footer>
+  </div>
+</body>
+</html>
