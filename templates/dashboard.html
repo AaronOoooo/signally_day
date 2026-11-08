@@ -12,13 +12,14 @@
   <script defer src="{{ url_for('static',filename='js/weather.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α4</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α5</span></div>
     </header>
 
     <main class="layout">
@@ -62,12 +63,14 @@
         <article class="card calendar-card">
           <div class="calendar-title"><h2>Calendar</h2><span class="calendar-icon" aria-hidden="true">▦</span></div>
           <p class="calendar-date" id="calendarDate">Today</p>
-          <div class="calendar-empty"><div class="calendar-glyph" aria-hidden="true">▤</div><p>Your upcoming events will appear here.</p><small>Private calendar connection comes in Phase 3.</small></div>
-          <div class="calendar-bottom"><span class="status">Not connected yet</span></div>
+          <div class="calendar-events" id="calendarEvents" aria-live="off">
+            <div class="calendar-empty" id="calendarLoading"><div class="calendar-glyph" aria-hidden="true">▤</div><p>Loading your calendar…</p></div>
+          </div>
+          <div class="calendar-bottom"><span class="status" id="calendarStatus" role="status">Connecting…</span></div>
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 weather + CTA · news, calendar pending</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 calendar · NPR news next</span></footer>
   </div>
   <dialog id="weatherDialog" class="station-dialog weather-dialog" aria-labelledby="weatherDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="weatherDialogTitle">Choose weather city</h2><button type="submit" aria-label="Close city search">✕</button></form>
