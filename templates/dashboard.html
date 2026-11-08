@@ -1,14 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="sunset-drive">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b1423">
+  <meta name="theme-color" content="#201824">
+  <script>try { const saved = localStorage.getItem("signallyDay.theme"); if (["sunset-drive","midnight-signal","electric-lounge","emerald-city","golden-hour","daybreak"].includes(saved)) document.documentElement.dataset.theme = saved; } catch (_) {}</script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/themes.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
@@ -21,7 +24,7 @@
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α7.1</span></div>
+      <div class="header-meta"><button type="button" class="theme-toggle" id="openThemes" aria-haspopup="dialog" aria-controls="themeDialog" title="Choose color theme">◐ <span>Themes</span></button><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 β1</span></div>
     </header>
 
     <main class="layout">
@@ -97,8 +100,16 @@
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 5 · YouTube search</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Beta 1 · Themes & polish</span></footer>
   </div>
+  <dialog id="themeDialog" class="theme-dialog" aria-labelledby="themeDialogTitle">
+    <div class="theme-dialog-top">
+      <div><p class="theme-kicker">MAKE IT YOURS</p><h2 id="themeDialogTitle">Choose your colors</h2><p class="theme-description">Changes apply instantly and are saved on this device.</p></div>
+      <button type="button" id="closeThemes" class="theme-close" aria-label="Close theme selector">✕</button>
+    </div>
+    <div id="themeOptions" class="theme-options" role="group" aria-label="Color themes"></div>
+    <p class="theme-dialog-footer">CTA arrival urgency colors stay the same in every theme.</p>
+  </dialog>
   <dialog id="videoDialog" class="station-dialog video-dialog" aria-labelledby="videoDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="videoDialogTitle">Search YouTube</h2><button type="submit" aria-label="Close video editor">✕</button></form>
     <p class="dialog-help">Find a video and tap its picture or title to play it in Signally Day. No YouTube login needed.</p>
