@@ -8,3 +8,7 @@ __pycache__/
 instance/
 .pytest_cache/
 .DS_Store
+
+calendar_data/
+credentials.json
+token.json

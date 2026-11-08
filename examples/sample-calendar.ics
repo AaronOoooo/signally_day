@@ -1,0 +1,10 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Signally Day//Sample calendar//EN
+BEGIN:VEVENT
+UID:signally-day-test-001@example.invalid
+SUMMARY:Signally Day calendar test
+DTSTART;TZID=America/Chicago:20261107T190000
+DTEND;TZID=America/Chicago:20261107T193000
+END:VEVENT
+END:VCALENDAR

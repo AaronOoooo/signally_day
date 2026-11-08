@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 import requests
 from flask import Flask, jsonify, render_template, request
+from calendar_feed import get_calendar_events, CalendarFeedError
 
 load_dotenv()
 
@@ -57,7 +58,7 @@ def dashboard():
 
 @app.get('/health')
 def health():
-    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.4.1')
+    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.5')
 
 
 @app.get('/api/stations/search')
@@ -291,6 +292,19 @@ def cta_arrivals():
         if cached:
             return jsonify(dict(cached['data'], stale=True))
         return jsonify(error='CTA arrivals are temporarily unavailable.'), 502
+
+
+@app.get('/api/calendar/events')
+def calendar_events():
+    """Private-LAN read-only calendar endpoint; never return the iCal feed URL."""
+    try:
+        data = get_calendar_events()
+        reply = jsonify(data)
+        reply.headers['Cache-Control'] = 'private, no-store'
+        return reply
+    except CalendarFeedError as exc:
+        # Deliberately avoid logging or returning the secret feed URL.
+        return jsonify(error=str(exc)), 503
 
 if __name__ == '__main__':
     # LAN development only. Do not forward port 5055 to the internet.

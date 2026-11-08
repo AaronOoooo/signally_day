@@ -47,3 +47,16 @@
 .transit-time-column.far .transit-clock,.transit-time-column.far .transit-eta{color:#5be3a8}
 .transit-time-column.soon .transit-clock,.transit-time-column.soon .transit-eta{color:#ffb454}
 .transit-time-column.imminent .transit-clock,.transit-time-column.imminent .transit-eta{color:#ff7878}
+
+
+/* Phase 3C: private, read-only calendar */
+.calendar-events{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#557794 transparent}
+.calendar-day{margin-bottom:18px}
+.calendar-day-title{color:var(--blue);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:8px 0 12px}
+.calendar-event{display:grid;grid-template-columns:77px minmax(0,1fr);gap:9px;align-items:start;margin:0 0 10px;padding-bottom:9px;border-bottom:1px solid #30445d}
+.calendar-event-time{color:#a9c2d9;font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.calendar-event-title{color:#f2f7ff;font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.calendar-message{color:#b9cce0;font-size:14px;line-height:1.5;margin:14px 0}
+.calendar-card .calendar-date{margin:14px 0 12px;padding-bottom:12px}
+.calendar-bottom{margin-top:auto}
+@media(max-height:780px) and (min-width:800px){.calendar-day{margin-bottom:11px}.calendar-event{margin-bottom:6px;padding-bottom:6px}.calendar-events{max-height:calc(100dvh - 225px)}}
