@@ -60,3 +60,13 @@
 .calendar-card .calendar-date{margin:14px 0 12px;padding-bottom:12px}
 .calendar-bottom{margin-top:auto}
 @media(max-height:780px) and (min-width:800px){.calendar-day{margin-bottom:11px}.calendar-event{margin-bottom:6px;padding-bottom:6px}.calendar-events{max-height:calc(100dvh - 225px)}}
+
+/* Phase 4: rotating NPR headlines */
+.news-text{display:block;text-decoration:none;color:#e4effa;min-width:0;overflow-wrap:anywhere;transition:opacity .22s ease;cursor:pointer}
+.news-text:hover,.news-text:focus-visible{text-decoration:underline;color:#fff}
+.news-text.news-fading{opacity:0}
+.news-label{color:var(--blue);text-decoration:none}
+.news-label:hover,.news-label:focus-visible{text-decoration:underline}
+.news-text:focus-visible,.news-label:focus-visible{outline:2px solid #9cd6ff;outline-offset:3px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){.news-text{transition:none}}
+@media (max-width:800px){.news-card{grid-template-columns:auto 1fr;gap:8px}.news-timing{grid-column:1/-1;display:block}}
