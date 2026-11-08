@@ -13,13 +13,14 @@
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/news.js') }}"></script>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α5</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α6</span></div>
     </header>
 
     <main class="layout">
@@ -56,7 +57,11 @@
           <audio id="radioAudio" preload="none"></audio>
           <div class="favorites"><div class="favorites-label"><h2>Favorite stations</h2><small>Tap to listen · Edit to configure</small></div><div class="favorite-buttons" id="favoriteButtons"></div><button type="button" class="edit-favorites" id="editFavorites">⚙ Edit favorites</button></div>
         </article>
-        <article class="card news-card" aria-label="NPR headlines area"><div class="news-label">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></div><div class="news-text" id="newsText" aria-live="off">Rotating headlines will appear here when the news feed is connected.</div><span class="news-timing">5s rotation planned</span></article>
+        <article class="card news-card" aria-label="NPR news headlines">
+          <a class="news-label" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" title="Visit NPR News">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></a>
+          <a class="news-text" id="newsText" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" aria-label="NPR headlines">Loading NPR headlines…</a>
+          <span class="news-timing" id="newsTiming">Updates periodically · rotates 5s</span>
+        </article>
       </section>
 
       <section class="column right" aria-label="Calendar">
@@ -70,7 +75,7 @@
         </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 3 calendar · NPR news next</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 4 · NPR headlines</span></footer>
   </div>
   <dialog id="weatherDialog" class="station-dialog weather-dialog" aria-labelledby="weatherDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="weatherDialogTitle">Choose weather city</h2><button type="submit" aria-label="Close city search">✕</button></form>

@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 import requests
 from flask import Flask, jsonify, render_template, request
 from calendar_feed import get_calendar_events, CalendarFeedError
+from news_feed import get_npr_headlines, NewsFeedError
 
 load_dotenv()
 
@@ -58,7 +59,7 @@ def dashboard():
 
 @app.get('/health')
 def health():
-    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.5')
+    return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.6')
 
 
 @app.get('/api/stations/search')
@@ -305,6 +306,18 @@ def calendar_events():
     except CalendarFeedError as exc:
         # Deliberately avoid logging or returning the secret feed URL.
         return jsonify(error=str(exc)), 503
+
+@app.get('/api/news/headlines')
+def npr_headlines():
+    """NPR headlines for private personal use; no feed configuration exposed."""
+    try:
+        result = get_npr_headlines()
+        reply = jsonify(result)
+        reply.headers['Cache-Control'] = 'private, no-store'
+        return reply
+    except NewsFeedError:
+        return jsonify(error='NPR headlines are temporarily unavailable.'), 503
+
 
 if __name__ == '__main__':
     # LAN development only. Do not forward port 5055 to the internet.
