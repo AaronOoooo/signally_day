@@ -70,3 +70,54 @@
 .news-text:focus-visible,.news-label:focus-visible{outline:2px solid #9cd6ff;outline-offset:3px;border-radius:3px}
 @media (prefers-reduced-motion:reduce){.news-text{transition:none}}
 @media (max-width:800px){.news-card{grid-template-columns:auto 1fr;gap:8px}.news-timing{grid-column:1/-1;display:block}}
+
+
+/* Phase 5: Signally Day YouTube panel below Calendar. */
+@media (min-width:801px){
+  .layout{grid-template-columns:minmax(0,23fr) minmax(0,44fr) minmax(0,33fr)}
+  .right{min-height:0}
+  .right .calendar-card{height:auto;flex:1 1 0;min-height:190px}
+  .right .calendar-events{flex:1;min-height:0;max-height:none;overflow-y:auto}
+}
+.youtube-card{flex:0 0 auto;display:flex;flex-direction:column;gap:9px;padding:12px 15px}
+.youtube-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.youtube-heading h2{font-size:17px;margin:0;display:flex;align-items:center;gap:6px}
+.youtube-mark{background:#ec303d;color:#fff;border-radius:6px;font-size:11px;padding:4px 7px}
+.youtube-actions{display:flex;gap:5px}
+.youtube-actions button{background:#294764;border:1px solid #4c7598;color:#e1f1ff;border-radius:8px;padding:5px 7px;font-size:11px;cursor:pointer;white-space:nowrap}
+.youtube-actions button:focus-visible,.youtube-foot a:focus-visible{outline:3px solid #9bd0ff;outline-offset:2px}
+.youtube-body{display:flex;flex-direction:column;gap:7px}
+.youtube-empty,.youtube-slot{width:100%;height:clamp(200px,22vh,245px);background:#091321;border-radius:10px;overflow:hidden}
+.youtube-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;padding:8px}
+.youtube-empty-icon{background:#e83243;color:white;border-radius:9px;padding:10px 16px;font-size:23px}
+.youtube-empty p{margin:2px 0;color:#f0f6ff;font-size:12px;font-weight:700}
+.youtube-empty small{color:#a7bad0;font-size:11px}
+.youtube-slot iframe{width:100%!important;height:100%!important;border:0;display:block}
+.youtube-foot{display:flex;justify-content:space-between;gap:6px;align-items:center;color:#b5cbe1;font-size:10px}
+.youtube-foot a{color:#9bd0ff;white-space:nowrap;text-decoration:none}
+.youtube-foot a:hover{text-decoration:underline}
+.youtube-card.video-collapsed .youtube-body{display:none}
+.youtube-card [hidden]{display:none!important}
+.video-dialog .search-row input{width:100%}
+@media (min-width:801px) and (max-height:750px){
+  .youtube-card{padding:9px 12px}
+  .youtube-empty,.youtube-slot{height:200px}
+  .right .calendar-card{min-height:170px}
+}
+@media (max-width:800px){
+  .right .calendar-card{height:auto;min-height:240px}
+  .youtube-empty,.youtube-slot{height:max(200px,28vw)}
+}
+
+/* v0.1.0-alpha.7.1: touch-friendly YouTube search results */
+.youtube-search-results{display:flex;flex-direction:column;gap:7px;max-height:min(43vh,350px);overflow-y:auto;margin:7px 0 12px;scrollbar-width:thin}
+.youtube-result{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:12px;width:100%;padding:8px;color:#f0f7ff;text-align:left;background:#1a324b;border:1px solid #3a5873;border-radius:10px;cursor:pointer;min-height:80px}
+.youtube-result:hover,.youtube-result:focus-visible{background:#294a69;border-color:#8ac7ff;outline:none}
+.youtube-result img{width:100px;aspect-ratio:16/9;object-fit:cover;background:#0a1627;border-radius:6px}
+.youtube-result-title{display:block;font-size:13px;line-height:1.35;font-weight:650;overflow-wrap:anywhere}
+.youtube-result-channel{display:block;margin-top:5px;font-size:11px;color:#afd0eb}
+.youtube-link-fallback{border-top:1px solid #38516b;padding-top:10px;margin-bottom:8px}
+.youtube-link-fallback summary{cursor:pointer;color:#a4d5ff;font-size:12px;margin-bottom:10px}
+.youtube-link-fallback .search-row{margin-top:8px}
+.video-dialog{width:min(94vw,575px);max-height:90dvh;overflow-y:auto}
+@media(max-width:800px){.youtube-result{grid-template-columns:88px minmax(0,1fr)}.youtube-result img{width:88px}}

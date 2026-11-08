@@ -14,13 +14,14 @@
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/news.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/youtube.js') }}"></script>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α6</span></div>
+      <div class="header-meta"><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 α7.1</span></div>
     </header>
 
     <main class="layout">
@@ -60,7 +61,7 @@
         <article class="card news-card" aria-label="NPR news headlines">
           <a class="news-label" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" title="Visit NPR News">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></a>
           <a class="news-text" id="newsText" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" aria-label="NPR headlines">Loading NPR headlines…</a>
-          <span class="news-timing" id="newsTiming">Updates periodically · rotates 5s</span>
+          <span class="news-timing" id="newsTiming">NPR · rotates every 10s</span>
         </article>
       </section>
 
@@ -73,10 +74,50 @@
           </div>
           <div class="calendar-bottom"><span class="status" id="calendarStatus" role="status">Connecting…</span></div>
         </article>
+        <article class="card youtube-card" id="youtubeCard" aria-label="YouTube video">
+          <div class="youtube-heading">
+            <h2><span aria-hidden="true" class="youtube-mark">▶</span> YouTube</h2>
+            <div class="youtube-actions">
+              <button type="button" id="editVideo" aria-label="Search YouTube videos">⌕ Search</button>
+              <button type="button" id="toggleVideo" aria-controls="youtubeBody" aria-expanded="true">▴ Hide</button>
+            </div>
+          </div>
+          <div id="youtubeBody" class="youtube-body">
+            <div id="youtubeEmpty" class="youtube-empty">
+              <span aria-hidden="true" class="youtube-empty-icon">▶</span>
+              <p>Choose a video to watch</p>
+              <small>Tap Edit to paste a YouTube link.</small>
+            </div>
+            <div id="youtubeSlot" class="youtube-slot" hidden></div>
+            <div class="youtube-foot">
+              <span id="youtubeStatus" role="status">Choose a video to begin</span>
+              <a id="openVideoOnYouTube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden>Open on YouTube ↗</a>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
-    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 4 · NPR headlines</span></footer>
+    <footer><span>Signally Day · Your music. Your news. Your day.</span><span>Phase 5 · YouTube search</span></footer>
   </div>
+  <dialog id="videoDialog" class="station-dialog video-dialog" aria-labelledby="videoDialogTitle">
+    <form method="dialog" class="dialog-top"><h2 id="videoDialogTitle">Search YouTube</h2><button type="submit" aria-label="Close video editor">✕</button></form>
+    <p class="dialog-help">Find a video and tap its picture or title to play it in Signally Day. No YouTube login needed.</p>
+    <form id="youtubeSearchForm" class="search-row">
+      <input id="youtubeSearchQuery" type="search" placeholder="e.g., Charlie Parker documentary" minlength="2" maxlength="100" autocomplete="off" aria-label="Search YouTube" required>
+      <button type="submit">Search</button>
+    </form>
+    <p class="dialog-help" id="youtubeSearchMessage" role="status">Search for music, videos, channels, or live news.</p>
+    <div id="youtubeSearchResults" class="youtube-search-results" aria-label="Video search results"></div>
+    <details class="youtube-link-fallback">
+      <summary>Have a YouTube link? Paste it instead</summary>
+      <form id="videoForm" class="search-row">
+        <input id="videoUrl" type="text" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." maxlength="300" aria-label="YouTube video URL" required>
+        <button type="submit">Use link</button>
+      </form>
+    </details>
+    <p class="dialog-help" id="videoMessage" role="status">Videos may occasionally prohibit embedded playback.</p>
+    <button type="button" id="clearVideo" class="clear-favorite">Clear saved video</button>
+  </dialog>
   <dialog id="weatherDialog" class="station-dialog weather-dialog" aria-labelledby="weatherDialogTitle">
     <form method="dialog" class="dialog-top"><h2 id="weatherDialogTitle">Choose weather city</h2><button type="submit" aria-label="Close city search">✕</button></form>
     <p class="dialog-help">Search for a city, then select the correct result. Your choice is saved on this device.</p>
