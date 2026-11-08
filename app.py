@@ -319,6 +319,67 @@ def npr_headlines():
         return jsonify(error='NPR headlines are temporarily unavailable.'), 503
 
 
+
+
+# YouTube Data API search: server-only API key, short cache to conserve quota.
+_YOUTUBE_CACHE = OrderedDict()
+_YOUTUBE_LOCK = Lock()
+_YOUTUBE_TTL = 15 * 60
+
+
+@app.get('/api/youtube/search')
+def youtube_search():
+    key = os.getenv('YOUTUBE_API_KEY', '').strip()
+    if not key:
+        return jsonify(error='YouTube search is not configured. Add YOUTUBE_API_KEY to .env.'), 503
+    query = request.args.get('q', '').strip()
+    if not (2 <= len(query) <= 100) or any(ord(ch) < 32 for ch in query):
+        return jsonify(error='Enter a search phrase of 2–100 characters.'), 400
+    normalized = ' '.join(query.lower().split())
+    now = time.monotonic()
+    with _YOUTUBE_LOCK:
+        cached = _YOUTUBE_CACHE.get(normalized)
+        if cached and now - cached['when'] < _YOUTUBE_TTL:
+            _YOUTUBE_CACHE.move_to_end(normalized)
+            return jsonify(cached['data'])
+    try:
+        resp = SESSION.get('https://www.googleapis.com/youtube/v3/search',
+            params={'part': 'snippet', 'q': query, 'type': 'video', 'maxResults': 10,
+                    'videoEmbeddable': 'true', 'videoSyndicated': 'true',
+                    'safeSearch': 'moderate', 'key': key}, timeout=12)
+        if resp.status_code in (400, 403, 429):
+            return jsonify(error='YouTube search was rejected or its daily limit was reached. Check the Google Cloud API settings.'), 503
+        resp.raise_for_status()
+        payload = resp.json()
+        videos = []
+        for item in payload.get('items', []):
+            if not isinstance(item, dict):
+                continue
+            ident = item.get('id') or {}
+            snippet = item.get('snippet') or {}
+            video_id = ident.get('videoId', '') if isinstance(ident, dict) else ''
+            if not re.fullmatch(r'[A-Za-z0-9_-]{11}', video_id):
+                continue
+            thumbs = snippet.get('thumbnails') or {}
+            thumb = (thumbs.get('medium') or thumbs.get('default') or {}).get('url', '')
+            if not isinstance(thumb, str) or not thumb.startswith('https://'):
+                thumb = ''
+            videos.append({'id': video_id,
+                           'title': str(snippet.get('title') or 'Untitled video')[:180],
+                           'channel': str(snippet.get('channelTitle') or 'YouTube')[:90],
+                           'thumbnail': thumb})
+        data = {'videos': videos}
+        with _YOUTUBE_LOCK:
+            _YOUTUBE_CACHE[normalized] = {'when': now, 'data': data}
+            _YOUTUBE_CACHE.move_to_end(normalized)
+            while len(_YOUTUBE_CACHE) > 60:
+                _YOUTUBE_CACHE.popitem(last=False)
+        reply = jsonify(data)
+        reply.headers['Cache-Control'] = 'private, no-store'
+        return reply
+    except (requests.RequestException, ValueError, TypeError):
+        return jsonify(error='YouTube search is temporarily unavailable.'), 502
+
 if __name__ == '__main__':
     # LAN development only. Do not forward port 5055 to the internet.
     app.run(host=os.getenv('SIGNALLY_DAY_HOST', '0.0.0.0'),
