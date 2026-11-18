@@ -17,6 +17,27 @@
     $('greeting').textContent = hour < 12 ? 'Good morning! Make today sound great.' : hour < 17 ? 'Good afternoon! Enjoy your day.' : 'Good evening! Settle in and listen.';
   }
   function connection() { $('connection').textContent = navigator.onLine ? 'Dashboard ready' : 'Offline'; }
+  const calendarToggle = $('toggleCalendar');
+  const dashboard = document.documentElement;
+  function updateCalendarToggle() {
+    const hidden = dashboard.dataset.calendarHidden === 'true';
+    const action = hidden ? 'Show' : 'Hide';
+    calendarToggle.textContent = action;
+    calendarToggle.setAttribute('aria-label', action + ' calendar events');
+    calendarToggle.setAttribute('aria-expanded', String(!hidden));
+  }
+  if (calendarToggle) {
+    updateCalendarToggle();
+    calendarToggle.addEventListener('click', () => {
+      const hidden = dashboard.dataset.calendarHidden !== 'true';
+      dashboard.dataset.calendarHidden = String(hidden);
+      updateCalendarToggle();
+      try {
+        localStorage.setItem('signallyDay.calendarHidden', String(hidden));
+      } catch (_) {}
+    });
+  }
+
   update(); connection();
   setInterval(update, 15000);
   addEventListener('online', connection); addEventListener('offline',connection);

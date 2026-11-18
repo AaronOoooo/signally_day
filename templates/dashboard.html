@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#201824">
   <script>try { const saved = localStorage.getItem("signallyDay.theme"); if (["sunset-drive","midnight-signal","electric-lounge","emerald-city","golden-hour","daybreak"].includes(saved)) document.documentElement.dataset.theme = saved; } catch (_) {}</script>
+  <script>
+    try {
+      if (localStorage.getItem('signallyDay.calendarHidden') === 'true') {
+        document.documentElement.dataset.calendarHidden = 'true';
+      }
+    } catch (_) {}
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
@@ -70,7 +77,11 @@
 
       <section class="column right" aria-label="Calendar">
         <article class="card calendar-card">
-          <div class="calendar-title"><h2>Calendar</h2><span class="calendar-icon" aria-hidden="true">▦</span></div>
+          <div class="calendar-title">
+            <h2>Calendar</h2>
+            <button type="button" class="calendar-toggle" id="toggleCalendar" aria-controls="calendarEvents" aria-expanded="true" aria-label="Hide calendar events">Hide</button>
+            <span class="calendar-icon" aria-hidden="true">▦</span>
+          </div>
           <p class="calendar-date" id="calendarDate">Today</p>
           <div class="calendar-events" id="calendarEvents" aria-live="off">
             <div class="calendar-empty" id="calendarLoading"><div class="calendar-glyph" aria-hidden="true">▤</div><p>Loading your calendar…</p></div>
