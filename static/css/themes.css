@@ -137,3 +137,122 @@ body{background:radial-gradient(ellipse at 50% -25%,var(--app-glow),transparent 
 @media(max-width:950px){.header{grid-template-columns:1fr 1fr auto}.theme-toggle span{display:none}.theme-toggle{font-size:17px;padding:6px 9px}.header-meta{gap:6px}}
 @media(max-width:540px){.theme-options{grid-template-columns:1fr}.header{grid-template-columns:1fr auto}.theme-dialog{padding:15px}}
 @media(prefers-reduced-motion:reduce){.card,.artwork{transition:none}}
+
+/* Four additional Signally Day palettes. */
+[data-theme="crimson-velvet"]{
+  color-scheme:dark;
+  --bg:#19171D;
+  --surface:#302126;
+  --surface2:#432D35;
+  --line:#79535F;
+  --text:#FFF3EC;
+  --muted:#DEC3C9;
+  --blue:#FF7B86;
+  --gold:#E9BC82;
+  --card-top:#38262D;
+  --card-bottom:#291D24;
+  --control-bg:#54343E;
+  --control-border:#A96B79;
+  --control-text:#FFF3EC;
+  --subtle:#E7BDC7;
+  --link:#FFA5AE;
+  --dialog-bg:#2C2027;
+  --field-bg:#432D35;
+  --art-light:#D47986;
+  --art-mid:#803D53;
+  --art-dark:#321D2C;
+  --disc-outer:#E79CA8;
+  --disc-dark:#211722;
+  --disc-light:#4C2A3E;
+  --play-text:#2A1018;
+  --app-glow:#B4456040;
+}
+[data-theme="ocean-glass"]{
+  color-scheme:dark;
+  --bg:#0C2025;
+  --surface:#173B42;
+  --surface2:#234B53;
+  --line:#4F7880;
+  --text:#F0FCF8;
+  --muted:#B6D9D9;
+  --blue:#63DACA;
+  --gold:#E8CB93;
+  --card-top:#20424A;
+  --card-bottom:#123239;
+  --control-bg:#2A535B;
+  --control-border:#588990;
+  --control-text:#F0FCF8;
+  --subtle:#A8DED9;
+  --link:#8DEFE0;
+  --dialog-bg:#15363D;
+  --field-bg:#244B53;
+  --art-light:#72D5CD;
+  --art-mid:#287F89;
+  --art-dark:#113B4B;
+  --disc-outer:#9ADDD7;
+  --disc-dark:#102D39;
+  --disc-light:#28505D;
+  --play-text:#092D31;
+  --app-glow:#389CA740;
+}
+[data-theme="rosewood"]{
+  color-scheme:dark;
+  --bg:#241C28;
+  --surface:#3D2C3C;
+  --surface2:#513B4D;
+  --line:#806377;
+  --text:#FFF2EC;
+  --muted:#E0C4D2;
+  --blue:#E7A0B6;
+  --gold:#EED0A2;
+  --card-top:#473344;
+  --card-bottom:#322532;
+  --control-bg:#604356;
+  --control-border:#A57A91;
+  --control-text:#FFF2EC;
+  --subtle:#E9C1D2;
+  --link:#F5BDCF;
+  --dialog-bg:#382A38;
+  --field-bg:#513B4D;
+  --art-light:#D8A2B5;
+  --art-mid:#96647F;
+  --art-dark:#432B4C;
+  --disc-outer:#E3B4C8;
+  --disc-dark:#291D31;
+  --disc-light:#52374F;
+  --play-text:#321A2B;
+  --app-glow:#AF708E40;
+}
+[data-theme="morning-paper"]{
+  color-scheme:light;
+  --bg:#F1E9DD;
+  --surface:#FFFBF5;
+  --surface2:#F1E5D7;
+  --line:#C5AD98;
+  --text:#35291F;
+  --muted:#685443;
+  --blue:#A83F32;
+  --gold:#85601A;
+  --card-top:#FFFCF7;
+  --card-bottom:#F7EFE6;
+  --control-bg:#EDE0D1;
+  --control-border:#B49A83;
+  --control-text:#463022;
+  --subtle:#78503F;
+  --link:#963B2F;
+  --dialog-bg:#FFF9F0;
+  --field-bg:#F5ECE0;
+  --art-light:#E7BA9A;
+  --art-mid:#B7755C;
+  --art-dark:#663E39;
+  --disc-outer:#B97961;
+  --disc-dark:#452F30;
+  --disc-light:#755046;
+  --play-text:#FFFFFF;
+  --app-glow:#C6905B25;
+}
+.theme-dialog{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+[data-theme="morning-paper"] .transit-time-column.far .transit-clock,[data-theme="morning-paper"] .transit-time-column.far .transit-eta{color:#116D3D}
+[data-theme="morning-paper"] .transit-time-column.soon .transit-clock,[data-theme="morning-paper"] .transit-time-column.soon .transit-eta{color:#995000}
+[data-theme="morning-paper"] .transit-time-column.imminent .transit-clock,[data-theme="morning-paper"] .transit-time-column.imminent .transit-eta{color:#B42332}
+[data-theme="morning-paper"] .youtube-mark,[data-theme="morning-paper"] .youtube-empty-icon{color:#fff}

@@ -6,7 +6,11 @@
     {id:'electric-lounge',name:'Electric Lounge',description:'Deep violet and electric lilac',colors:['#151226','#292143','#B68CFF','#F7F0FF']},
     {id:'emerald-city',name:'Emerald City',description:'Forest green and soft mint',colors:['#0B1C1A','#183731','#69D8A2','#F1FFF7']},
     {id:'golden-hour',name:'Golden Hour',description:'Gold on modern charcoal',colors:['#191B20','#313034','#F2C66D','#FFF9E9']},
-    {id:'daybreak',name:'Daybreak',description:'Light, bright, and relaxed',colors:['#EAF1F6','#FFFFFF','#2879C9','#172940']}
+    {id:'daybreak',name:'Daybreak',description:'Light, bright, and relaxed',colors:['#EAF1F6','#FFFFFF','#2879C9','#172940']},
+    {id:'crimson-velvet',name:'Crimson Velvet',description:'Cherry red, burgundy, and warm cream',colors:['#19171D','#302126','#FF7B86','#FFF3EC']},
+    {id:'ocean-glass',name:'Ocean Glass',description:'Deep teal and luminous turquoise',colors:['#0C2025','#173B42','#63DACA','#F0FCF8']},
+    {id:'rosewood',name:'Rosewood',description:'Dusty rose and champagne on dark plum',colors:['#241C28','#3D2C3C','#E7A0B6','#FFF2EC']},
+    {id:'morning-paper',name:'Morning Paper',description:'Warm ivory, sand, and terracotta red',colors:['#F1E9DD','#FFFBF5','#A83F32','#35291F']}
   ];
   const storageKey = 'signallyDay.theme';
   const dialog = document.getElementById('themeDialog');
