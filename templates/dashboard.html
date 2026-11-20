@@ -15,11 +15,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='weather-forecast-1') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/themes.js') }}"></script>
-  <script defer src="{{ url_for('static',filename='js/weather.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/weather.js',v='weather-forecast-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
@@ -44,8 +44,20 @@
         <article class="card weather-card">
           <div class="card-heading weather-heading"><span class="weather-icon" aria-hidden="true">☀</span><h2>Weather</h2><button type="button" class="weather-edit" id="editWeather" aria-label="Change weather city">✎ Edit</button></div>
           <p class="weather-place" id="weatherPlace">Chicago, IL</p>
-          <div class="weather-primary"><span id="weatherSymbol" aria-hidden="true">☁</span><strong id="weatherTemp">--°</strong></div>
-          <p id="weatherDescription" class="weather-description">Connecting to OpenWeatherMap…</p>
+          <div class="weather-body">
+            <div class="weather-current">
+              <div class="weather-primary"><span id="weatherSymbol" aria-hidden="true">☁</span><strong id="weatherTemp">--°</strong></div>
+              <p id="weatherDescription" class="weather-description">Connecting to OpenWeatherMap…</p>
+            </div>
+            <aside class="weather-forecast" id="weatherForecast" aria-label="Today’s forecast">
+              <dl>
+                <div><dt>High</dt><dd id="weatherHigh">—</dd></div>
+                <div><dt>Low</dt><dd id="weatherLow">—</dd></div>
+                <div><dt><abbr title="Maximum precipitation probability today, including rain and snow">Precip.</abbr></dt><dd id="weatherPrecip">—</dd></div>
+              </dl>
+              <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label="Forecast data from Open-Meteo">Open-Meteo</a>
+            </aside>
+          </div>
           <p id="weatherDetails" class="weather-details">Feels like --°</p>
           <span class="status" id="weatherStatus" role="status">Loading weather</span>
         </article>
