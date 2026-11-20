@@ -147,3 +147,17 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 .player-card .favorite-buttons{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:7px}
 .player-card .favorite-buttons button{min-height:36px;padding:8px 3px;touch-action:manipulation}
 @media(max-width:540px){.player-card .favorite-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* NPR label with timing underneath */
+.news-card{
+  grid-template-columns:max-content minmax(0,1fr);
+  column-gap:12px;
+  row-gap:3px;
+}
+.news-card .news-label{grid-column:1;grid-row:1}
+.news-card .news-timing{
+  grid-column:1;grid-row:2;display:block;font-size:9px;
+}
+.news-card .news-text{
+  grid-column:2;grid-row:1 / span 2;align-self:center;
+}

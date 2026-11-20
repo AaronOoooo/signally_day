@@ -43,7 +43,7 @@
       clearTimeout(fadeTimer);
       link.classList.remove('news-fading');
       display(items[index]);
-      timing.textContent = data.stale ? 'Earlier headlines · rotates 10s' : 'NPR · rotates every 10s';
+      timing.textContent = data.stale ? 'Earlier headlines · rotates 10s' : 'rotates every 10s';
       startRotation();
     } catch (error) {
       if (!items.length) {
