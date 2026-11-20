@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#201824">
-  <script>try { const saved = localStorage.getItem("signallyDay.theme"); if (["sunset-drive","midnight-signal","electric-lounge","emerald-city","golden-hour","daybreak"].includes(saved)) document.documentElement.dataset.theme = saved; } catch (_) {}</script>
+  <script>try { const saved = localStorage.getItem("signallyDay.theme"); if (["sunset-drive","midnight-signal","electric-lounge","emerald-city","golden-hour","daybreak","crimson-velvet","ocean-glass","rosewood","morning-paper"].includes(saved)) document.documentElement.dataset.theme = saved; } catch (_) {}</script>
   <script>
     try {
       if (localStorage.getItem('signallyDay.calendarHidden') === 'true') {
@@ -16,9 +16,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='ten-favorites-1') }}">
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css',v='four-new-themes-1') }}">
   <script defer src="{{ url_for('static',filename='js/day.js') }}"></script>
-  <script defer src="{{ url_for('static',filename='js/themes.js') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/themes.js',v='four-new-themes-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js',v='weather-forecast-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/radio.js',v='ten-favorites-1') }}"></script>
