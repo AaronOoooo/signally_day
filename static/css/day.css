@@ -138,3 +138,12 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 .weather-forecast dd{margin:0;color:var(--text);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
 .weather-forecast a{display:block;margin-top:5px;font-size:8px;line-height:1.2;color:var(--muted);text-decoration:underline;white-space:nowrap}
 .weather-forecast a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* Ten favorite stations: two rows of five on the dashboard. */
+.player-card .favorites-label{align-items:center;gap:6px;flex-wrap:wrap}
+.player-card .favorites-label h2{font-size:14px}
+.favorites-actions{margin-left:auto;display:flex;align-items:center;white-space:nowrap;color:var(--muted);font-size:10px}
+.player-card .favorites-actions .edit-favorites{margin:0;padding:6px 0 6px 3px;font:inherit;color:var(--link,var(--blue));text-decoration:underline;cursor:pointer;background:none;border:0}
+.player-card .favorite-buttons{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:7px}
+.player-card .favorite-buttons button{min-height:36px;padding:8px 3px;touch-action:manipulation}
+@media(max-width:540px){.player-card .favorite-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}

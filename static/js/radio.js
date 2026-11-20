@@ -4,7 +4,8 @@
   const audio = $('radioAudio');
   const savedKey = 'signally_day_favorites_v1';
   const volumeKey = 'signally_day_volume_v1';
-  const defaultFavorites = [null, null, null, null, null];
+  const favoriteCount = 10;
+  const defaultFavorites = Array(favoriteCount).fill(null);
   let favorites = defaultFavorites.slice();
   let selected = -1;
   let requestToken = 0;
@@ -13,8 +14,12 @@
   let lastStream = '';
   try {
     const stored = JSON.parse(localStorage.getItem(savedKey));
-    if (Array.isArray(stored) && stored.length === 5) {
-      favorites = stored.map(item => item && typeof item.uuid === 'string' && typeof item.name === 'string' ? {uuid:item.uuid,name:item.name} : null);
+    if (Array.isArray(stored) && (stored.length === 5 || stored.length === favoriteCount)) {
+      favorites = defaultFavorites.map((_, i) => {
+        const item = stored[i];
+        return item && typeof item.uuid === 'string' && typeof item.name === 'string'
+          ? {uuid:item.uuid,name:item.name} : null;
+      });
     }
   } catch (_) { /* ignore invalid local preferences */ }
   const storedVolume = localStorage.getItem(volumeKey) === null ? .7 : Number(localStorage.getItem(volumeKey));
@@ -115,8 +120,8 @@
   }
   function stepStation(direction) {
     if (!favorites.some(Boolean)) { openPicker(0); return; }
-    for (let step = 1; step <= 5; step += 1) {
-      const i = ((selected < 0 ? (direction > 0 ? -1 : 0) : selected) + direction * step + 50) % 5;
+    for (let step = 1; step <= favorites.length; step += 1) {
+      const i = ((selected < 0 ? (direction > 0 ? -1 : 0) : selected) + direction * step + favorites.length * 2) % favorites.length;
       if (favorites[i]) { selectStation(i); return; }
     }
   }
@@ -139,6 +144,13 @@
   audio.addEventListener('waiting', () => { if (audio.src) status('Buffering…'); });
   audio.addEventListener('error', () => { status('Stream unavailable'); syncButton(); });
 
+  // Populate all ten editor slots, including on devices with five saved favorites.
+  $('favoriteSlot').replaceChildren(...Array.from({length: favoriteCount}, (_, i) => {
+    const option = document.createElement('option');
+    option.value = String(i);
+    option.textContent = `Favorite ${i + 1}`;
+    return option;
+  }));
   const picker = $('stationDialog');
   function openPicker(i) {
     $('favoriteSlot').value = String(i);
