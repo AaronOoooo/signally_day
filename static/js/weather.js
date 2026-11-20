@@ -27,10 +27,37 @@
     return [c.name, state].filter(Boolean).join(', ');
   }
   byId('weatherPlace').textContent = cityLabel(city);
+  function clearForecast(message = 'Today’s forecast is loading') {
+    for (const id of ['weatherHigh', 'weatherLow', 'weatherPrecip']) byId(id).textContent = '—';
+    byId('weatherForecast').title = message;
+  }
+  async function loadForecast(selected, version) {
+    clearForecast();
+    try {
+      const params = new URLSearchParams({lat: String(selected.lat), lon: String(selected.lon)});
+      const response = await fetch('/api/weather/forecast?' + params, {cache: 'no-store'});
+      const data = await response.json();
+      if (version !== requestVersion) return;
+      if (!response.ok) throw new Error('Forecast unavailable');
+      const localDate = new Intl.DateTimeFormat('en-CA', {
+        timeZone: data.timezone, year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(new Date());
+      const part = name => localDate.find(p => p.type === name).value;
+      if (data.date !== `${part('year')}-${part('month')}-${part('day')}`) throw new Error('Forecast out of date');
+      byId('weatherHigh').textContent = Number.isFinite(data.high) ? `${data.high}°` : '—';
+      byId('weatherLow').textContent = Number.isFinite(data.low) ? `${data.low}°` : '—';
+      byId('weatherPrecip').textContent = Number.isFinite(data.precip) ? `${data.precip}%` : '—';
+      byId('weatherForecast').title = 'Today’s forecast: high, low, and maximum precipitation probability (rain or snow), from Open-Meteo';
+    } catch (_) {
+      if (version === requestVersion) clearForecast('Today’s forecast is temporarily unavailable');
+    }
+  }
+
   async function loadWeather() {
     const status = byId('weatherStatus');
     const version = ++requestVersion;
     const selected = city;
+    loadForecast(selected, version);
     status.textContent = 'Updating weather…';
     try {
       const params = new URLSearchParams({lat: String(selected.lat), lon: String(selected.lon)});

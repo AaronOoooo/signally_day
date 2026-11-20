@@ -19,6 +19,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.json.sort_keys = False
+
+from weather_forecast import register_forecast
+register_forecast(app)
 SIGNALLY_BASE = os.getenv('SIGNALLY_BASE_URL', 'https://signallyradio.com').rstrip('/')
 RADIO_BROWSER_MIRRORS = [
     'https://de1.api.radio-browser.info',

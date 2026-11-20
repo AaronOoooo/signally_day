@@ -124,3 +124,17 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 .youtube-link-fallback .search-row{margin-top:8px}
 .video-dialog{width:min(94vw,575px);max-height:90dvh;overflow-y:auto}
 @media(max-width:800px){.youtube-result{grid-template-columns:88px minmax(0,1fr)}.youtube-result img{width:88px}}
+
+/* Weather forecast column: uses the existing theme and card dimensions. */
+.weather-body{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:8px;align-items:center}
+.weather-current{min-width:0}
+.weather-card .weather-primary{gap:6px}
+.weather-card .weather-primary span{font-size:clamp(24px,2.6vw,30px)}
+.weather-card .weather-primary strong{font-size:clamp(30px,4vw,44px)}
+.weather-forecast{border-left:1px solid var(--line);padding-left:9px;min-width:0}
+.weather-forecast dl{margin:0;display:grid;gap:4px}
+.weather-forecast dl>div{display:flex;align-items:baseline;justify-content:space-between;gap:3px;font-size:11px;line-height:1.25;white-space:nowrap}
+.weather-forecast dt{color:var(--muted)}
+.weather-forecast dd{margin:0;color:var(--text);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.weather-forecast a{display:block;margin-top:5px;font-size:8px;line-height:1.2;color:var(--muted);text-decoration:underline;white-space:nowrap}
+.weather-forecast a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
