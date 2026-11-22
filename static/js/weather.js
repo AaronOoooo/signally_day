@@ -70,14 +70,17 @@
       byId('weatherDescription').textContent = data.description;
       byId('weatherDetails').textContent = `Feels like ${data.feels_like}° · Humidity ${data.humidity}%`;
       status.textContent = data.stale ? 'Last available weather' : 'Live weather · Updates every 10 min';
+      document.dispatchEvent(new CustomEvent('signallyDay:weather', {detail: data}));
     } catch (error) {
       if (version !== requestVersion) return;
       status.textContent = 'Weather unavailable';
+      document.dispatchEvent(new CustomEvent('signallyDay:weather', {detail: null}));
       byId('weatherDescription').textContent = error.message || 'Try again shortly';
     }
   }
   function chooseCity(c) {
     city = c;
+    document.dispatchEvent(new CustomEvent('signallyDay:weather', {detail: null}));
     try {localStorage.setItem(prefKey, JSON.stringify(c));} catch (_) { /* still works for this session */ }
     byId('weatherPlace').textContent = cityLabel(c);
     byId('weatherDialog').close();

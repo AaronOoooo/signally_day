@@ -14,7 +14,7 @@
     $('today').textContent = dateFmt.format(now);
     $('calendarDate').textContent = 'Today · ' + weekdayFmt.format(now);
     const hour = Number(hourFmt.format(now));
-    $('greeting').textContent = hour < 12 ? 'Good morning! Make today sound great.' : hour < 17 ? 'Good afternoon! Enjoy your day.' : 'Good evening! Settle in and listen.';
+    // Greeting rotation is managed by greetings.js.
   }
   function connection() { $('connection').textContent = navigator.onLine ? 'Dashboard ready' : 'Offline'; }
   const calendarToggle = $('toggleCalendar');
