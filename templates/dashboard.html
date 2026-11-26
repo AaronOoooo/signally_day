@@ -15,10 +15,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='npr-layout-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='smart-screen-3') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css',v='four-new-themes-1') }}">
   <script defer src="{{ url_for('static',filename='js/day.js',v='hourly-greetings-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/greetings.js',v='hourly-greetings-1') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/smart-screen.js',v='smart-screen-4') }}"></script>
   <script defer src="{{ url_for('static',filename='js/themes.js',v='four-new-themes-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js',v='hourly-greetings-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
@@ -32,7 +33,16 @@
     <header class="header">
       <div class="brand" aria-label="Signally Day"><span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="brand-word">signally</span><span class="brand-day">DAY</span></div>
       <p class="greeting" id="greeting">Welcome to your day.</p>
-      <div class="header-meta"><button type="button" class="theme-toggle" id="openThemes" aria-haspopup="dialog" aria-controls="themeDialog" title="Choose color theme">◐ <span>Themes</span></button><span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 β1</span></div>
+      <div class="header-meta">
+        <button type="button" class="theme-toggle" id="openThemes" aria-haspopup="dialog" aria-controls="themeDialog" title="Choose color theme" aria-label="Choose color theme">Themes</button>
+        <button type="button" class="theme-toggle" id="dimNow" aria-label="Dim screen now" title="Dim screen now" aria-haspopup="dialog" aria-controls="smartScreen" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <span class="online-dot" aria-hidden="true"></span><span id="connection">Dashboard ready</span><span class="version">v0.1.0 β1</span>
+      </div>
     </header>
 
     <main class="layout">
@@ -186,6 +196,9 @@
     <label for="favoriteSlot">Favorite slot</label><select id="favoriteSlot"><option value="0">Favorite 1</option><option value="1">Favorite 2</option><option value="2">Favorite 3</option><option value="3">Favorite 4</option><option value="4">Favorite 5</option></select>
     <div class="search-row"><input id="stationQuery" type="search" placeholder="e.g., Ella Radio, jazz, NPR" maxlength="80"><button type="button" id="searchStations">Search</button></div>
     <p id="searchMessage" role="status" class="dialog-help">Search by station name.</p><div id="stationResults" class="station-results"></div><button type="button" id="clearFavorite" class="clear-favorite">Clear selected favorite</button>
+  </dialog>
+  <dialog id="smartScreen" aria-label="Smart Screen">
+    <button type="button" aria-label="Show dashboard for five minutes" autofocus></button>
   </dialog>
 </body>
 </html>
