@@ -1,9 +1,12 @@
 """Signally Day: private LAN dashboard and independent radio player."""
 import os
 import re
+import sqlite3
 import time
 from threading import Lock
 from collections import OrderedDict
+from contextlib import closing
+from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -63,6 +66,73 @@ def dashboard():
 @app.get('/health')
 def health():
     return jsonify(status='ok', app='Signally Day', version='0.1.0-alpha.6')
+
+
+FAVORITE_COUNT = 10
+app.config['FAVORITES_DB'] = Path(
+    os.getenv('SIGNALLY_FAVORITES_DB') or Path.home() / '.local/share/signally-day/favorites.sqlite3'
+)
+
+
+def favorite_station(value):
+    if value is None:
+        return None, None
+    if isinstance(value, dict):
+        name = value.get('name')
+        if valid_station_uuid(value.get('uuid')) and isinstance(name, str) and 0 < len(name.strip()) <= 256:
+            return value['uuid'], name.strip()
+    raise ValueError('Invalid favorite station.')
+
+
+@app.route('/api/favorites', methods=['GET', 'POST', 'PUT'])
+def shared_favorites():
+    # POST seeds an untouched database. PUT updates one 1-based slot.
+    rows = []
+    writing = request.method in ('POST', 'PUT')
+    try:
+        if writing:
+            if request.content_length is not None and request.content_length > 16_384:
+                return jsonify(error='Favorites request is too large.'), 413
+            data = request.get_json(silent=True)
+            if request.method == 'POST' and isinstance(data, list) and len(data) == FAVORITE_COUNT:
+                rows = [(i, *favorite_station(item)) for i, item in enumerate(data, 1)]
+                if not any(uuid for _, uuid, _ in rows):
+                    raise ValueError('There are no browser favorites to import.')
+            elif (request.method == 'PUT' and isinstance(data, dict)
+                  and type(data.get('slot')) is int and 1 <= data['slot'] <= FAVORITE_COUNT
+                  and 'station' in data):
+                rows = [(data['slot'], *favorite_station(data['station']))]
+            else:
+                raise ValueError('Invalid favorites request.')
+    except ValueError as exc:
+        return jsonify(error=str(exc)), 400
+
+    path = Path(app.config['FAVORITES_DB'])
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with closing(sqlite3.connect(path)) as db, db:
+            db.execute('CREATE TABLE IF NOT EXISTS favorites (slot INTEGER PRIMARY KEY, uuid TEXT, name TEXT)')
+            if writing:
+                db.execute('BEGIN IMMEDIATE')
+                if request.method == 'POST' and db.execute('SELECT 1 FROM favorites LIMIT 1').fetchone():
+                    return jsonify(error='Shared favorites are already set up.'), 409
+                db.executemany(
+                    'INSERT INTO favorites VALUES (?, ?, ?) '
+                    'ON CONFLICT(slot) DO UPDATE SET uuid=excluded.uuid, name=excluded.name',
+                    rows,
+                )
+            saved = db.execute('SELECT slot, uuid, name FROM favorites').fetchall()
+    except (sqlite3.Error, OSError):
+        app.logger.exception('Shared favorites storage failed')
+        return jsonify(error='Shared favorites are unavailable. Try again.'), 503
+
+    favorites = [None] * FAVORITE_COUNT
+    for slot, uuid, name in saved:
+        if uuid:
+            favorites[slot - 1] = {'uuid': uuid, 'name': name}
+    response = jsonify(favorites=favorites, initialized=bool(saved))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
 
 
 @app.get('/api/stations/search')

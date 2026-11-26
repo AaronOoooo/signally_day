@@ -23,7 +23,7 @@
   <script defer src="{{ url_for('static',filename='js/themes.js',v='four-new-themes-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js',v='hourly-greetings-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
-  <script defer src="{{ url_for('static',filename='js/radio.js',v='ten-favorites-1') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/radio.js',v='shared-favorites-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/news.js',v='npr-label-3') }}"></script>
   <script defer src="{{ url_for('static',filename='js/youtube.js') }}"></script>
@@ -195,7 +195,7 @@
     <p class="dialog-help">Choose a favorite slot, search for a station, then tap a result to save it.</p>
     <label for="favoriteSlot">Favorite slot</label><select id="favoriteSlot"><option value="0">Favorite 1</option><option value="1">Favorite 2</option><option value="2">Favorite 3</option><option value="3">Favorite 4</option><option value="4">Favorite 5</option></select>
     <div class="search-row"><input id="stationQuery" type="search" placeholder="e.g., Ella Radio, jazz, NPR" maxlength="80"><button type="button" id="searchStations">Search</button></div>
-    <p id="searchMessage" role="status" class="dialog-help">Search by station name.</p><div id="stationResults" class="station-results"></div><button type="button" id="clearFavorite" class="clear-favorite">Clear selected favorite</button>
+    <p id="searchMessage" role="status" class="dialog-help">Search by station name.</p><div id="stationResults" class="station-results"></div><button type="button" id="importFavorites" class="clear-favorite" hidden>Import this browser’s favorites</button><button type="button" id="clearFavorite" class="clear-favorite">Clear selected favorite</button>
   </dialog>
   <dialog id="smartScreen" aria-label="Smart Screen">
     <button type="button" aria-label="Show dashboard for five minutes" autofocus></button>
