@@ -3,6 +3,7 @@
   const $ = id => document.getElementById(id);
   const audio = $('radioAudio');
   const savedKey = 'signally_day_favorites_v1';
+  const wbez = {name:'WBEZ 91.5 Chicago', streamUrl:'https://stream.wbez.org/wbez128.mp3'};
   const volumeKey = 'signally_day_volume_v1';
   const favoriteCount = 10;
   const defaultFavorites = Array(favoriteCount).fill(null);
@@ -66,18 +67,23 @@
     abortController?.abort();
     abortController = null;
   }
+  function playStream(url) {
+    lastStream = url;
+    audio.src = url;
+    audio.load();
+    syncButton();
+    const token = requestToken;
+    audio.play().catch(error => {
+      if (token === requestToken && error.name !== 'AbortError') {
+        status(error.name === 'NotAllowedError' ? 'Tap Play to listen' : 'Stream unavailable');
+      }
+    });
+  }
   function updateMetadata(data, firstLoad) {
     $('stationName').textContent = data.name || playingStation?.name || 'Radio station';
     $('nowPlaying').textContent = [data.artist, data.song].filter(Boolean).join(' — ') || 'Live radio · Track information unavailable';
     setArt(data.graphic);
-    if (firstLoad && data.streamUrl) {
-      lastStream = data.streamUrl;
-      audio.src = data.streamUrl;
-      audio.load();
-      syncButton();
-      // Called after a station tap. Some iPadOS versions may require pressing Play again.
-      audio.play().catch(() => status('Tap Play to listen'));
-    }
+    if (firstLoad && data.streamUrl) playStream(data.streamUrl);
   }
   async function fetchMetadata(token, firstLoad) {
     const item = playingStation;
@@ -124,6 +130,18 @@
     fetchMetadata(token, true);
     metadataTimer = setInterval(() => fetchMetadata(token, false), 60000);
   }
+  $('listenWbez').addEventListener('click', () => {
+    stopMetadata();
+    selected = -1;
+    playingStation = wbez;
+    $('stationName').textContent = wbez.name;
+    $('nowPlaying').textContent = 'Live radio';
+    setArt('');
+    renderFavorites();
+    status('Connecting…');
+    // Start playback within the tap so Safari can honor the user gesture.
+    playStream(wbez.streamUrl);
+  });
   function stepStation(direction) {
     if (!favorites.some(Boolean)) { openPicker(0); return; }
     for (let step = 1; step <= favorites.length; step += 1) {
