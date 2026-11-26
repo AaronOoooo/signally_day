@@ -161,3 +161,41 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 .news-card .news-text{
   grid-column:2;grid-row:1 / span 2;align-self:center;
 }
+
+#dimNow svg {
+  display: block;
+}
+#dimNow {
+  flex-shrink: 0;
+}
+
+#smartScreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #030303;
+}
+#smartScreen::backdrop {
+  background: #030303;
+}
+#smartScreen button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#smartScreen button:focus-visible {
+  outline: 1px solid #767676;
+  outline-offset: -4px;
+}
