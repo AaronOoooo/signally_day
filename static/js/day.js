@@ -1,21 +1,54 @@
 (() => {
   'use strict';
   const zone = 'America/Chicago';
-  const timeFmt = new Intl.DateTimeFormat('en-US', {timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true});
-  const dateFmt = new Intl.DateTimeFormat('en-US', {timeZone:zone,weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  const weekdayFmt = new Intl.DateTimeFormat('en-US', {timeZone:zone,weekday:'long',month:'long',day:'numeric'});
-  const hourFmt = new Intl.DateTimeFormat('en-US', {timeZone:zone,hour:'numeric',hourCycle:'h23'});
   const $ = id => document.getElementById(id);
+  const date = $('today');
+  const localButton = $('toggleLocalClock');
+  const timeOptions = {hour:'numeric', minute:'2-digit', hour12:true};
+  const dateOptions = {weekday:'long', month:'long', day:'numeric', year:'numeric'};
+  const chicagoTime = new Intl.DateTimeFormat('en-US', {...timeOptions, timeZone:zone});
+  const chicagoDate = new Intl.DateTimeFormat('en-US', {...dateOptions, timeZone:zone});
+  const calendarDate = new Intl.DateTimeFormat('en-US', {
+    timeZone:zone, weekday:'long', month:'long', day:'numeric',
+  });
+  let localTime;
+  let localDate;
+
+  function fitDate() {
+    date.style.fontSize = '';
+    if (date.clientWidth && date.scrollWidth > date.clientWidth) {
+      const size = parseFloat(getComputedStyle(date).fontSize);
+      date.style.fontSize = (size * (date.clientWidth - 1) / date.scrollWidth) + 'px';
+    }
+  }
+
   function update() {
     const now = new Date();
-    const parts = timeFmt.formatToParts(now);
-    $('clock').textContent = parts.filter(p => ['hour','literal','minute'].includes(p.type)).map(p=>p.value).join('');
-    $('ampm').textContent = parts.find(p=>p.type==='dayPeriod')?.value || '';
-    $('today').textContent = dateFmt.format(now);
-    $('calendarDate').textContent = 'Today · ' + weekdayFmt.format(now);
-    const hour = Number(hourFmt.format(now));
-    // Greeting rotation is managed by greetings.js.
+    const parts = (localTime || chicagoTime).formatToParts(now);
+    const hour = parts.find(part => part.type === 'hour').value;
+    const minute = parts.find(part => part.type === 'minute').value;
+    $('clock').textContent = hour + ':' + minute;
+    $('ampm').textContent = parts.find(part => part.type === 'dayPeriod').value;
+    const fullDate = (localDate || chicagoDate).format(now);
+    if (date.textContent !== fullDate) {
+      date.textContent = fullDate;
+      fitDate();
+    }
+    $('calendarDate').textContent = 'Today · ' + calendarDate.format(now);
   }
+
+  localButton.addEventListener('click', () => {
+    const useLocal = !localTime;
+    localTime = useLocal ? new Intl.DateTimeFormat('en-US', timeOptions) : null;
+    localDate = useLocal ? new Intl.DateTimeFormat('en-US', dateOptions) : null;
+    localButton.textContent = useLocal ? 'Chicago' : 'Local';
+    $('clockZone').textContent = useLocal ? 'LOCAL TIME' : 'CHICAGO TIME';
+    update();
+  });
+  if (typeof ResizeObserver === 'function') {
+    new ResizeObserver(fitDate).observe(date.closest('.clock-card'));
+  }
+  addEventListener('resize', fitDate);
   function connection() { $('connection').textContent = navigator.onLine ? 'Dashboard ready' : 'Offline'; }
   const calendarToggle = $('toggleCalendar');
   const dashboard = document.documentElement;

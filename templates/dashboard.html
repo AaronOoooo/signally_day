@@ -15,9 +15,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='smart-screen-3') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='local-clock-1') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css',v='four-new-themes-1') }}">
-  <script defer src="{{ url_for('static',filename='js/day.js',v='hourly-greetings-1') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/day.js',v='local-clock-2') }}"></script>
   <script defer src="{{ url_for('static',filename='js/greetings.js',v='hourly-greetings-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/smart-screen.js',v='smart-screen-4') }}"></script>
   <script defer src="{{ url_for('static',filename='js/themes.js',v='four-new-themes-1') }}"></script>
@@ -48,7 +48,10 @@
     <main class="layout">
       <section class="column left" aria-label="At a glance">
         <article class="card clock-card">
-          <p class="eyebrow">CHICAGO TIME</p>
+          <div class="clock-heading">
+            <p class="eyebrow" id="clockZone">CHICAGO TIME</p>
+            <button type="button" class="theme-toggle clock-local" id="toggleLocalClock">Local</button>
+          </div>
           <div class="time-line"><time id="clock">--:--</time><span class="ampm" id="ampm">--</span></div>
           <p class="date" id="today">Loading the date…</p>
         </article>

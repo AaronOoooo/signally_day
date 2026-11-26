@@ -199,3 +199,23 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
   outline: 1px solid #767676;
   outline-offset: -4px;
 }
+
+
+.clock-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.clock-heading .eyebrow {
+  margin: 0;
+}
+.clock-heading .clock-local {
+  flex: none;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.clock-card .date {
+  white-space: nowrap;
+}
