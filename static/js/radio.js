@@ -7,6 +7,10 @@
   const favoriteCount = 10;
   const defaultFavorites = Array(favoriteCount).fill(null);
   let favorites = defaultFavorites.slice();
+  let browserFavorites = defaultFavorites.slice();
+  let playingStation = null;
+  let savingFavorites = false;
+  let refreshVersion = 0;
   let selected = -1;
   let requestToken = 0;
   let metadataTimer = null;
@@ -15,14 +19,15 @@
   try {
     const stored = JSON.parse(localStorage.getItem(savedKey));
     if (Array.isArray(stored) && (stored.length === 5 || stored.length === favoriteCount)) {
-      favorites = defaultFavorites.map((_, i) => {
+      browserFavorites = defaultFavorites.map((_, i) => {
         const item = stored[i];
         return item && typeof item.uuid === 'string' && typeof item.name === 'string'
           ? {uuid:item.uuid,name:item.name} : null;
       });
     }
   } catch (_) { /* ignore invalid local preferences */ }
-  const storedVolume = localStorage.getItem(volumeKey) === null ? .7 : Number(localStorage.getItem(volumeKey));
+  let storedVolume = .7;
+  try { storedVolume = Number(localStorage.getItem(volumeKey) ?? .7); } catch (_) {}
   audio.volume = Number.isFinite(storedVolume) && storedVolume >= 0 && storedVolume <= 1 ? storedVolume : .7;
   $('volume').value = Math.round(audio.volume * 100);
 
@@ -49,7 +54,7 @@
       button.type = 'button';
       button.textContent = item ? item.name : `Favorite ${i+1}`;
       button.title = item ? item.name : `Set up favorite ${i+1}`;
-      if (i === selected) button.classList.add('active');
+      if (i === selected && item?.uuid === playingStation?.uuid && item) button.classList.add('active');
       button.addEventListener('click', () => item ? selectStation(i) : openPicker(i));
       region.appendChild(button);
     });
@@ -62,7 +67,7 @@
     abortController = null;
   }
   function updateMetadata(data, firstLoad) {
-    $('stationName').textContent = data.name || favorites[selected]?.name || 'Radio station';
+    $('stationName').textContent = data.name || playingStation?.name || 'Radio station';
     $('nowPlaying').textContent = [data.artist, data.song].filter(Boolean).join(' — ') || 'Live radio · Track information unavailable';
     setArt(data.graphic);
     if (firstLoad && data.streamUrl) {
@@ -75,7 +80,7 @@
     }
   }
   async function fetchMetadata(token, firstLoad) {
-    const item = favorites[selected];
+    const item = playingStation;
     if (!item || token !== requestToken) return;
     const controller = new AbortController();
     abortController = controller;
@@ -108,6 +113,7 @@
     audio.load();
     lastStream = '';
     selected = i;
+    playingStation = item;
     $('stationName').textContent = item.name;
     $('nowPlaying').textContent = 'Loading station…';
     setArt('');
@@ -135,7 +141,7 @@
   $('volume').addEventListener('input', event => {
     audio.volume = Number(event.target.value) / 100;
     audio.muted = false;
-    localStorage.setItem(volumeKey, String(audio.volume));
+    try { localStorage.setItem(volumeKey, String(audio.volume)); } catch (_) {}
     syncButton();
   });
   $('mute').addEventListener('click', () => { audio.muted = !audio.muted; syncButton(); });
@@ -161,16 +167,82 @@
   }
   function closePicker() { if (typeof picker.close === 'function') picker.close(); else picker.removeAttribute('open'); }
   $('editFavorites').addEventListener('click', () => openPicker(selected < 0 ? 0 : selected));
-  function persist() { localStorage.setItem(savedKey, JSON.stringify(favorites)); renderFavorites(); }
-  $('clearFavorite').addEventListener('click', () => {
-    const i = Number($('favoriteSlot').value);
-    favorites[i] = null;
-    if (selected === i) {
-      stopMetadata(); audio.pause(); audio.removeAttribute('src'); audio.load(); selected = -1;
-      setArt(''); $('stationName').textContent = 'Ready to listen'; $('nowPlaying').textContent = 'Choose a favorite station.';
-      status('Choose a station below'); syncButton();
+  const importButton = $('importFavorites');
+  const canImport = browserFavorites.some(Boolean);
+
+  async function favoritesRequest(method, payload) {
+    const options = {method, cache:'no-store'};
+    if (payload !== undefined) {
+      options.headers = {'Content-Type':'application/json'};
+      options.body = JSON.stringify(payload);
     }
-    persist(); closePicker();
+    const response = await fetch('/api/favorites', options);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Shared favorites are unavailable.');
+    return data;
+  }
+
+  function showSharedFavorites(data) {
+    importButton.hidden = data.initialized || !canImport;
+    if (JSON.stringify(favorites) !== JSON.stringify(data.favorites)) {
+      favorites = data.favorites;
+      renderFavorites();
+    }
+  }
+
+  async function refreshFavorites() {
+    if (savingFavorites) return;
+    const version = ++refreshVersion;
+    try {
+      const data = await favoritesRequest('GET');
+      if (version === refreshVersion) showSharedFavorites(data);
+    } catch (_) {
+      if (version === refreshVersion && !picker.open && !playingStation) {
+        status('Shared favorites are unavailable. Retrying…');
+      }
+    }
+  }
+
+  async function saveFavorites(method, payload, onSaved) {
+    if (savingFavorites) return;
+    savingFavorites = true;
+    refreshVersion += 1;
+    $('searchMessage').textContent = 'Saving shared favorites…';
+    try {
+      showSharedFavorites(await favoritesRequest(method, payload));
+      onSaved();
+    } catch (error) {
+      $('searchMessage').textContent = error.message;
+    } finally {
+      savingFavorites = false;
+      refreshFavorites();
+    }
+  }
+
+  importButton.addEventListener('click', () => {
+    saveFavorites('POST', browserFavorites, () => {
+      $('searchMessage').textContent = 'Browser favorites imported.';
+    });
+  });
+  $('clearFavorite').addEventListener('click', () => {
+    const index = Number($('favoriteSlot').value);
+    const station = favorites[index];
+    saveFavorites('PUT', {slot:index + 1, station:null}, () => {
+      if (selected === index && station && playingStation?.uuid === station.uuid) {
+        stopMetadata();
+        audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
+        selected = -1;
+        playingStation = null;
+        setArt('');
+        $('stationName').textContent = 'Ready to listen';
+        $('nowPlaying').textContent = 'Choose a favorite station.';
+        status('Choose a station below');
+        syncButton();
+      }
+      closePicker();
+    });
   });
   async function search() {
     const q = $('stationQuery').value.trim();
@@ -191,8 +263,10 @@
         button.append(title,detail);
         button.addEventListener('click', () => {
           const slot = Number($('favoriteSlot').value);
-          favorites[slot] = {uuid:station.uuid,name:station.name};
-          persist(); closePicker(); selectStation(slot);
+          saveFavorites('PUT', {
+            slot:slot + 1,
+            station:{uuid:station.uuid,name:station.name},
+          }, () => { closePicker(); selectStation(slot); });
         });
         $('stationResults').appendChild(button);
       }
@@ -202,4 +276,12 @@
   $('searchStations').addEventListener('click', search);
   $('stationQuery').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
   renderFavorites(); syncButton();
+  refreshFavorites();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshFavorites();
+  });
+  window.addEventListener('pageshow', refreshFavorites);
+  setInterval(() => {
+    if (!document.hidden) refreshFavorites();
+  }, 10000);
 })();
