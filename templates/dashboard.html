@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Signally Day</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='local-clock-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/day.css',v='wbez-live-1') }}">
   <link rel="stylesheet" href="{{ url_for('static',filename='css/themes.css',v='four-new-themes-1') }}">
   <script defer src="{{ url_for('static',filename='js/day.js',v='local-clock-2') }}"></script>
   <script defer src="{{ url_for('static',filename='js/greetings.js',v='hourly-greetings-1') }}"></script>
@@ -23,7 +23,7 @@
   <script defer src="{{ url_for('static',filename='js/themes.js',v='four-new-themes-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/weather.js',v='hourly-greetings-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/cta.js') }}"></script>
-  <script defer src="{{ url_for('static',filename='js/radio.js',v='shared-favorites-1') }}"></script>
+  <script defer src="{{ url_for('static',filename='js/radio.js',v='wbez-live-1') }}"></script>
   <script defer src="{{ url_for('static',filename='js/calendar.js') }}"></script>
   <script defer src="{{ url_for('static',filename='js/news.js',v='npr-label-3') }}"></script>
   <script defer src="{{ url_for('static',filename='js/youtube.js') }}"></script>
@@ -104,6 +104,7 @@
           <a class="news-label" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" title="Visit NPR News">NPR HEADLINES <span class="news-indicator" aria-hidden="true">●</span></a>
           <a class="news-text" id="newsText" href="https://www.npr.org/sections/news/" target="_blank" rel="noopener noreferrer" aria-label="NPR headlines">Loading NPR headlines…</a>
           <span class="news-timing" id="newsTiming">rotates every 10s</span>
+          <button type="button" class="theme-toggle news-listen" id="listenWbez">Listen to WBEZ</button>
         </article>
       </section>
 

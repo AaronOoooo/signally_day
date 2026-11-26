@@ -150,7 +150,7 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 
 /* NPR label with timing underneath */
 .news-card{
-  grid-template-columns:max-content minmax(0,1fr);
+  grid-template-columns:max-content minmax(0,1fr) max-content;
   column-gap:12px;
   row-gap:3px;
 }
@@ -218,4 +218,13 @@ html[data-calendar-hidden="true"] .calendar-bottom{visibility:hidden}
 }
 .clock-card .date {
   white-space: nowrap;
+}
+
+
+.news-card .news-listen {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: 11px;
+  padding: 6px 8px;
 }
